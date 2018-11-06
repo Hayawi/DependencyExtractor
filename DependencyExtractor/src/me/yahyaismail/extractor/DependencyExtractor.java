@@ -13,6 +13,8 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
 
+import me.yahyaismail.filesystem.*;
+
 public class DependencyExtractor {
 
 	static Map<String, List<String>> fileDependencies = new HashMap<String, List<String>>();
@@ -20,37 +22,19 @@ public class DependencyExtractor {
 	static String applicationPath;
 	
 	public static void main(String[] args) {
-		applicationPath = getFolder();
+		System.out.println(new File("C:\\Users\\Hayawi\\Downloads\\hbase-2.1.0-src\\hbase-2.1.0\\hbase-metrics-api").isDirectory());
+		applicationPath = FileSystem.getFolder();
 		File applicationFolder = new File(applicationPath);
-		ArrayList<File> listOfFiles = recurseFiles(applicationFolder);
+		ArrayList<File> listOfFiles = FileSystem.recurseFiles(applicationFolder);
+		
 		for (int i = 0; i < listOfFiles.size(); i++){
 			System.out.println(listOfFiles.get(i));
 		}
-	}
-	
-	private static ArrayList<File> recurseFiles(File directory){
-		ArrayList<File> localObjects = new ArrayList<File>(Arrays.asList(directory.listFiles()));
-		ArrayList<File> mergedFiles = new ArrayList<File>();
-		for (int i = 0; i < localObjects.size(); i++)
-		{
-			if (localObjects.get(i).isDirectory()){
-				File directoryToRecurse = localObjects.get(i);
-				localObjects.remove(i);
-				mergedFiles.addAll(recurseFiles(directoryToRecurse));
-			}
+		
+		FileSystem.filterSrc(listOfFiles, ".java");
+		for (int i = 0; i < listOfFiles.size(); i++){
+			System.out.println(listOfFiles.get(i));
 		}
-		mergedFiles.addAll(localObjects);
-		return mergedFiles;
-	}
-
-	private static String getFolder(){
-		JFileChooser chooser = new JFileChooser();
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int returnVal = chooser.showOpenDialog(null);
-		if (returnVal == JFileChooser.APPROVE_OPTION){
-			System.out.println("You chose to open this folder: " + chooser.getSelectedFile().getName());
-		}
-		return chooser.getSelectedFile().getAbsolutePath();
 	}
 	
 }
